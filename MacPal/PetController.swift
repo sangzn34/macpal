@@ -26,9 +26,33 @@ final class PetController {
     private var lastStateChange: Date = .now
     private var nextBehaviorChange: Date = .now
     private var sleepLockedByUser = false
+    private var homeOrigin: NSPoint?
+    var openStatusPanel: (() -> Void)?
 
     func bind(window: NSWindow) {
         self.window = window
+    }
+
+    func houseDidMove(_ origin: NSPoint) {
+        homeOrigin = origin
+    }
+
+    func houseDidTap() {
+        openStatusPanel?()
+    }
+
+    func goHome() {
+        guard let homeOrigin, let window else { return }
+        let petCenterX = window.frame.origin.x + Self.petSize.width / 2
+        let targetX = homeOrigin.x + PetHouse.doorCenterOffset.x
+        let direction: WalkDirection = targetX < petCenterX ? .left : .right
+        transition(to: .walkingHome(direction: direction))
+        nextBehaviorChange = Date.distantFuture
+    }
+
+    private var houseDoorScreenX: CGFloat? {
+        guard let homeOrigin else { return nil }
+        return homeOrigin.x + PetHouse.doorCenterOffset.x
     }
 
     func start() {
@@ -145,6 +169,8 @@ final class PetController {
         switch state {
         case .walking(let direction):
             stepWalk(direction: direction)
+        case .walkingHome(let direction):
+            stepWalkHome(direction: direction)
         case .idle:
             if !sleepLockedByUser,
                Date.now.timeIntervalSince(lastStateChange) > Self.idleSecondsBeforeSleep {
@@ -157,6 +183,33 @@ final class PetController {
         case .sleeping, .happy, .dragged:
             break
         }
+    }
+
+    private func stepWalkHome(direction: WalkDirection) {
+        guard let window, let targetX = houseDoorScreenX else {
+            transition(to: .idle)
+            scheduleNextBehavior(in: 2...5)
+            return
+        }
+        let petCenterX = window.frame.origin.x + Self.petSize.width / 2
+        let distance = abs(targetX - petCenterX)
+
+        if distance < speed.pixelsPerTick + 1 {
+            // arrived — sit/sleep at home, restore happiness slowly via decay-pass
+            transition(to: .sleeping)
+            stats.happiness = min(100, stats.happiness + 15)
+            stats.save()
+            scheduleNextBehavior(in: 4...8)
+            return
+        }
+
+        let newDirection: WalkDirection = targetX < petCenterX ? .left : .right
+        if newDirection != direction {
+            transition(to: .walkingHome(direction: newDirection))
+        }
+        var origin = window.frame.origin
+        origin.x += newDirection.sign * speed.pixelsPerTick
+        window.setFrameOrigin(origin)
     }
 
     private func stepWalk(direction: WalkDirection) {
@@ -182,6 +235,11 @@ final class PetController {
     }
 
     private func pickRandomBehavior() {
+        let homeUrge = shouldGoHome()
+        if homeUrge {
+            goHome()
+            return
+        }
         if Bool.random() {
             let direction: WalkDirection = Bool.random() ? .left : .right
             transition(to: .walking(direction: direction))
@@ -189,6 +247,14 @@ final class PetController {
         } else {
             scheduleNextBehavior(in: 2...5)
         }
+    }
+
+    private func shouldGoHome() -> Bool {
+        guard homeOrigin != nil else { return false }
+        // Higher chance when hunger or happiness low; 15% baseline otherwise.
+        if stats.hunger < 25 || stats.happiness < 25 { return Double.random(in: 0...1) < 0.6 }
+        if stats.hunger < 50 || stats.happiness < 50 { return Double.random(in: 0...1) < 0.30 }
+        return Double.random(in: 0...1) < 0.15
     }
 
     private func scheduleNextBehavior(in range: ClosedRange<Double>) {

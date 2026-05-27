@@ -89,7 +89,7 @@ struct PetView: View {
         case .idle:
             let bob = sin(bobPhase * 0.5) * 1.0
             return (character.idle, false, CGFloat(bob), 0)
-        case .walking(let direction):
+        case .walking(let direction), .walkingHome(let direction):
             let sprite = walkToggle ? character.walkA : character.walkB
             let bob = abs(sin(bobPhase)) * 2.0
             return (sprite, direction.flipped, CGFloat(-bob), 0)

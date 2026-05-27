@@ -3,6 +3,7 @@ import Foundation
 enum PetState: Equatable {
     case idle
     case walking(direction: WalkDirection)
+    case walkingHome(direction: WalkDirection)
     case sleeping
     case happy
     case dragged
