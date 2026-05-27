@@ -25,6 +25,25 @@ enum PixelPalette {
         // Ghost (white spirit + light shadow)
         "F": Color(red: 0.97, green: 0.97, blue: 1.00),
         "f": Color(red: 0.75, green: 0.78, blue: 0.85),
+
+        // Octopus (purple)
+        "U": Color(red: 0.65, green: 0.35, blue: 0.85),
+        "u": Color(red: 0.40, green: 0.18, blue: 0.55),
+
+        // Alien (lime green)
+        "A": Color(red: 0.55, green: 0.90, blue: 0.45),
+        "a": Color(red: 0.30, green: 0.60, blue: 0.20),
+
+        // Robot (metallic gray)
+        "E": Color(red: 0.78, green: 0.80, blue: 0.85),
+        "e": Color(red: 0.45, green: 0.48, blue: 0.55),
+
+        // Dino (teal-green)
+        "T": Color(red: 0.30, green: 0.65, blue: 0.55),
+        "t": Color(red: 0.15, green: 0.40, blue: 0.30),
+
+        // Cyan (robot eye, alien details)
+        "C": Color(red: 0.35, green: 0.85, blue: 0.95),
     ]
 
     static func color(for char: Character) -> Color {
@@ -48,9 +67,18 @@ struct PixelSprite {
     }
 }
 
+enum PetEcosystem: String, CaseIterable, Identifiable {
+    case classic = "Classic"
+    case ocean = "Ocean"
+    case space = "Space"
+    case prehistoric = "Prehistoric"
+    var id: String { rawValue }
+}
+
 struct PixelCharacter: Identifiable, Hashable {
     let id: String
     let name: String
+    let ecosystem: PetEcosystem
     let idle: PixelSprite
     let walkA: PixelSprite
     let walkB: PixelSprite

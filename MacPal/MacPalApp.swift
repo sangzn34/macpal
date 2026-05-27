@@ -21,14 +21,18 @@ struct MenuBarContent: View {
         }
         Divider()
         Menu("Character") {
-            ForEach(PetCharacters.all) { character in
-                Button {
-                    controller.character = character
-                } label: {
-                    if controller.character.id == character.id {
-                        Label(character.name, systemImage: "checkmark")
-                    } else {
-                        Text(character.name)
+            ForEach(PetEcosystem.allCases) { eco in
+                Section(eco.rawValue) {
+                    ForEach(PetCharacters.characters(in: eco)) { character in
+                        Button {
+                            controller.character = character
+                        } label: {
+                            if controller.character.id == character.id {
+                                Label(character.name, systemImage: "checkmark")
+                            } else {
+                                Text(character.name)
+                            }
+                        }
                     }
                 }
             }

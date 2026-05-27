@@ -4,6 +4,7 @@ enum PetCharacters {
     static let cat = PixelCharacter(
         id: "cat",
         name: "Cat",
+        ecosystem: .classic,
         idle: PixelSprite([
             "........................",
             "........................",
@@ -139,6 +140,7 @@ enum PetCharacters {
     static let dog = PixelCharacter(
         id: "dog",
         name: "Dog",
+        ecosystem: .classic,
         idle: PixelSprite([
             "........................",
             "........................",
@@ -274,6 +276,7 @@ enum PetCharacters {
     static let slime = PixelCharacter(
         id: "slime",
         name: "Slime",
+        ecosystem: .classic,
         idle: PixelSprite([
             "........................",
             "........................",
@@ -409,6 +412,7 @@ enum PetCharacters {
     static let ghost = PixelCharacter(
         id: "ghost",
         name: "Ghost",
+        ecosystem: .classic,
         idle: PixelSprite([
             "........................",
             "........................",
@@ -541,9 +545,9 @@ enum PetCharacters {
         ])
     )
 
-    static let all: [PixelCharacter] = [cat, dog, slime, ghost]
+    static var all: [PixelCharacter] { allEcosystems }
 
     static func character(withId id: String) -> PixelCharacter {
-        all.first(where: { $0.id == id }) ?? cat
+        allEcosystems.first(where: { $0.id == id }) ?? cat
     }
 }
