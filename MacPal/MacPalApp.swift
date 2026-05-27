@@ -20,6 +20,19 @@ struct MenuBarContent: View {
             controller.toggleSleep()
         }
         Divider()
+        Menu("Character") {
+            ForEach(PetCharacters.all) { character in
+                Button {
+                    controller.character = character
+                } label: {
+                    if controller.character.id == character.id {
+                        Label(character.name, systemImage: "checkmark")
+                    } else {
+                        Text(character.name)
+                    }
+                }
+            }
+        }
         Menu("Speed") {
             ForEach(PetSpeed.allCases) { speed in
                 Button {

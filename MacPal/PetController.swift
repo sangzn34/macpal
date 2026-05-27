@@ -10,6 +10,11 @@ final class PetController {
 
     private(set) var state: PetState = .idle
     var speed: PetSpeed = .medium
+    var character: PixelCharacter = PetCharacters.character(
+        withId: UserDefaults.standard.string(forKey: "MacPal.character") ?? "cat"
+    ) {
+        didSet { UserDefaults.standard.set(character.id, forKey: "MacPal.character") }
+    }
     var isSleeping: Bool { state == .sleeping }
 
     private weak var window: NSWindow?
