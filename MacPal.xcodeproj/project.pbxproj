@@ -12,12 +12,15 @@
 		63AD973A8FA217723DA5514A /* PetCharactersExtra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EF1498E7AC4A37B95C97B5C /* PetCharactersExtra.swift */; };
 		812E8BEF139DF97D276C6AC3 /* MacPalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D00169503AEF312D8809DBE5 /* MacPalApp.swift */; };
 		849D415DEF6AEDAE246EEC4C /* PetHouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D1D301CE6A159FD8726B140 /* PetHouse.swift */; };
+		8591818B787E0E9AC4534D15 /* Monster.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC51A73A2BFFC5057E576C38 /* Monster.swift */; };
 		85C76F401385E94894E0D144 /* PetState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFD3A7912D05C3C5679E580 /* PetState.swift */; };
 		9554EC4F1DDA79854FFB4232 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DB80F83B8BB1A794E0BB16 /* AppDelegate.swift */; };
 		BA2C87DB48AC694BAC21EBA9 /* PetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FDBB2081877B9ED699B4DE /* PetController.swift */; };
 		BC4D93A3A98C8F4F357E58A3 /* PetCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94F04BE39E5E219CACFEB09 /* PetCharacters.swift */; };
 		BE73FC41C453E5CC6AD2BDFA /* HouseWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C94FB6CA34C7FBA74A75F1 /* HouseWindow.swift */; };
+		E1C5774DE9E2CA24E08AB4E5 /* MonsterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6161AA39CB737C63E30449 /* MonsterWindow.swift */; };
 		E6B40725FD3C5851B1A797CF /* HomeWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2802954392128AA8119D9E1F /* HomeWindow.swift */; };
+		F5FFBCA5A0507B36D07BBF52 /* MonsterSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7EC995B97D13392848D95A /* MonsterSprites.swift */; };
 		F9C1F3EB998F7ADE77F0D5D7 /* PetStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B2DB3F7A593C41253E33D75 /* PetStats.swift */; };
 		F9E66D22BDA8F3F4C8022C4A /* HouseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C06D58FA7906BBB6CEEC75A /* HouseView.swift */; };
 		FD11B6BBC23C11DE80933E31 /* PetWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A25F9C425C0AFC7810AFAB8 /* PetWindow.swift */; };
@@ -33,9 +36,12 @@
 		6AB81570DB99A2E0103AE7E8 /* PixelSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelSprite.swift; sourceTree = "<group>"; };
 		6D1D301CE6A159FD8726B140 /* PetHouse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetHouse.swift; sourceTree = "<group>"; };
 		8C8EAD1071562DBFD09D522E /* PetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetView.swift; sourceTree = "<group>"; };
+		8E7EC995B97D13392848D95A /* MonsterSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonsterSprites.swift; sourceTree = "<group>"; };
 		9A25F9C425C0AFC7810AFAB8 /* PetWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetWindow.swift; sourceTree = "<group>"; };
 		9AFD3A7912D05C3C5679E580 /* PetState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetState.swift; sourceTree = "<group>"; };
+		AD6161AA39CB737C63E30449 /* MonsterWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonsterWindow.swift; sourceTree = "<group>"; };
 		B2C94FB6CA34C7FBA74A75F1 /* HouseWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseWindow.swift; sourceTree = "<group>"; };
+		CC51A73A2BFFC5057E576C38 /* Monster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Monster.swift; sourceTree = "<group>"; };
 		D00169503AEF312D8809DBE5 /* MacPalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPalApp.swift; sourceTree = "<group>"; };
 		D2038FA4F9D63E54D9086AA2 /* MacPal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacPal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3DB80F83B8BB1A794E0BB16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -60,6 +66,9 @@
 				B2C94FB6CA34C7FBA74A75F1 /* HouseWindow.swift */,
 				2EA6A15DA350B19719E2EFBF /* Info.plist */,
 				D00169503AEF312D8809DBE5 /* MacPalApp.swift */,
+				CC51A73A2BFFC5057E576C38 /* Monster.swift */,
+				8E7EC995B97D13392848D95A /* MonsterSprites.swift */,
+				AD6161AA39CB737C63E30449 /* MonsterWindow.swift */,
 				E94F04BE39E5E219CACFEB09 /* PetCharacters.swift */,
 				3EF1498E7AC4A37B95C97B5C /* PetCharactersExtra.swift */,
 				41FDBB2081877B9ED699B4DE /* PetController.swift */,
@@ -145,6 +154,9 @@
 				F9E66D22BDA8F3F4C8022C4A /* HouseView.swift in Sources */,
 				BE73FC41C453E5CC6AD2BDFA /* HouseWindow.swift in Sources */,
 				812E8BEF139DF97D276C6AC3 /* MacPalApp.swift in Sources */,
+				8591818B787E0E9AC4534D15 /* Monster.swift in Sources */,
+				F5FFBCA5A0507B36D07BBF52 /* MonsterSprites.swift in Sources */,
+				E1C5774DE9E2CA24E08AB4E5 /* MonsterWindow.swift in Sources */,
 				BC4D93A3A98C8F4F357E58A3 /* PetCharacters.swift in Sources */,
 				63AD973A8FA217723DA5514A /* PetCharactersExtra.swift in Sources */,
 				BA2C87DB48AC694BAC21EBA9 /* PetController.swift in Sources */,

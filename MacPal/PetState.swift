@@ -4,6 +4,8 @@ enum PetState: Equatable {
     case idle
     case walking(direction: WalkDirection)
     case walkingHome(direction: WalkDirection)
+    case approachingEnemy(direction: WalkDirection)
+    case fighting
     case sleeping
     case happy
     case dragged

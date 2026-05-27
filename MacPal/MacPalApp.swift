@@ -47,6 +47,10 @@ struct MenuBarContent: View {
             _ = controller.play()
         }
         .keyboardShortcut("p")
+        Button("Spawn monster ⚔️") {
+            controller.spawnMonsterNow()
+        }
+        .keyboardShortcut("m")
         Divider()
         Button(controller.isSleeping ? "Wake up" : "Sleep") {
             controller.toggleSleep()

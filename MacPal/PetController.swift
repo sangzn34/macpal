@@ -8,6 +8,9 @@ final class PetController {
     static let tickInterval: TimeInterval = 1.0 / 30.0
     static let idleSecondsBeforeSleep: TimeInterval = 30
     static let decayInterval: TimeInterval = 30
+    static let monsterSpawnIntervalRange: ClosedRange<Double> = 60...120
+    static let combatTickSeconds: TimeInterval = 1.0
+    static let combatRangePx: CGFloat = 80
 
     private(set) var state: PetState = .idle
     var speed: PetSpeed = .medium
@@ -18,11 +21,24 @@ final class PetController {
     }
     var stats: PetStats = PetStats.load()
     var levelUpFlashTrigger: Int = 0
+    var lastDamageDealt: (amount: Int, at: Date)?
+    var lastDamageTaken: (amount: Int, at: Date)?
+    private(set) var monster: Monster?
+    private(set) var monsterOriginX: CGFloat?
     var isSleeping: Bool { state == .sleeping }
+    var isInCombat: Bool {
+        if case .fighting = state { return true }
+        if case .approachingEnemy = state { return true }
+        return false
+    }
+    var monsterDidSpawn: ((Monster, NSPoint) -> Void)?
+    var monsterDidDespawn: ((UUID) -> Void)?
 
     private weak var window: NSWindow?
     private var timer: Timer?
     private var decayTimer: Timer?
+    private var monsterSpawnTimer: Timer?
+    private var combatTimer: Timer?
     private var lastStateChange: Date = .now
     private var nextBehaviorChange: Date = .now
     private var sleepLockedByUser = false
@@ -76,6 +92,145 @@ final class PetController {
         }
         RunLoop.main.add(decay, forMode: .common)
         self.decayTimer = decay
+
+        scheduleNextMonsterSpawn()
+    }
+
+    // MARK: - Monsters
+
+    var petAttack: Int { 4 + stats.level * 2 }
+
+    private func scheduleNextMonsterSpawn() {
+        monsterSpawnTimer?.invalidate()
+        let delay = Double.random(in: Self.monsterSpawnIntervalRange)
+        let t = Timer(timeInterval: delay, repeats: false) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.spawnMonsterIfPossible()
+            }
+        }
+        RunLoop.main.add(t, forMode: .common)
+        monsterSpawnTimer = t
+    }
+
+    func spawnMonsterIfPossible() {
+        defer { scheduleNextMonsterSpawn() }
+        guard monster == nil else { return }
+        guard !sleepLockedByUser else { return }
+        spawnMonsterNow()
+    }
+
+    func spawnMonsterNow() {
+        guard monster == nil else { return }
+        let kind = MonsterKind.allCases.randomElement()!
+        let m = Monster(kind: kind)
+        monster = m
+
+        guard let screen = NSScreen.main, let window else { return }
+        let visible = screen.visibleFrame
+        let leftSide = Bool.random()
+        let x: CGFloat = leftSide
+            ? visible.minX + 30
+            : visible.maxX - MonsterWindow.size.width - 30
+        let origin = NSPoint(x: x, y: window.frame.origin.y)
+        monsterOriginX = origin.x
+        monsterDidSpawn?(m, origin)
+
+        startApproach()
+    }
+
+    private func startApproach() {
+        guard let window, let mx = monsterCenterX() else { return }
+        let petCenterX = window.frame.origin.x + Self.petSize.width / 2
+        let direction: WalkDirection = mx < petCenterX ? .left : .right
+        transition(to: .approachingEnemy(direction: direction))
+        nextBehaviorChange = Date.distantFuture
+    }
+
+    private func monsterCenterX() -> CGFloat? {
+        guard let x = monsterOriginX else { return nil }
+        return x + MonsterWindow.size.width / 2
+    }
+
+    private func stepApproach(direction: WalkDirection) {
+        guard let window, let mx = monsterCenterX() else {
+            endCombat(victory: false)
+            return
+        }
+        let petCenterX = window.frame.origin.x + Self.petSize.width / 2
+        let distance = abs(mx - petCenterX)
+        if distance <= Self.combatRangePx {
+            transition(to: .fighting)
+            startCombatLoop()
+            return
+        }
+        let newDir: WalkDirection = mx < petCenterX ? .left : .right
+        if newDir != direction {
+            transition(to: .approachingEnemy(direction: newDir))
+        }
+        var origin = window.frame.origin
+        origin.x += newDir.sign * speed.pixelsPerTick * 1.5
+        window.setFrameOrigin(origin)
+    }
+
+    private func startCombatLoop() {
+        combatTimer?.invalidate()
+        let t = Timer(timeInterval: Self.combatTickSeconds, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.combatTick()
+            }
+        }
+        RunLoop.main.add(t, forMode: .common)
+        combatTimer = t
+    }
+
+    private func combatTick() {
+        guard let monster else {
+            stopCombatLoop()
+            return
+        }
+        // Pet attacks
+        let dmg = max(1, petAttack + Int.random(in: -1...2))
+        monster.hp = max(0, monster.hp - dmg)
+        monster.hurtFlash &+= 1
+        lastDamageDealt = (dmg, .now)
+
+        if monster.isDead {
+            endCombat(victory: true)
+            return
+        }
+
+        // Monster attacks back: small happiness/hunger drain
+        let bite = max(1, monster.kind.attack + Int.random(in: -1...1))
+        lastDamageTaken = (bite, .now)
+        stats.happiness = max(0, stats.happiness - bite)
+        stats.hunger = max(0, stats.hunger - max(1, bite / 2))
+        stats.save()
+    }
+
+    private func endCombat(victory: Bool) {
+        stopCombatLoop()
+        if let m = monster {
+            if victory {
+                let leveled = stats.addXP(m.kind.xpReward)
+                stats.save()
+                if leveled { levelUpFlashTrigger &+= 1 }
+            }
+            monsterDidDespawn?(m.id)
+        }
+        monster = nil
+        monsterOriginX = nil
+
+        if victory {
+            triggerHappy(duration: 1.0)
+        } else {
+            transition(to: .idle)
+            scheduleNextBehavior(in: 2...4)
+        }
+    }
+
+    private func stopCombatLoop() {
+        combatTimer?.invalidate()
+        combatTimer = nil
     }
 
     func feed() -> FeedResult {
@@ -171,6 +326,10 @@ final class PetController {
             stepWalk(direction: direction)
         case .walkingHome(let direction):
             stepWalkHome(direction: direction)
+        case .approachingEnemy(let direction):
+            stepApproach(direction: direction)
+        case .fighting:
+            break
         case .idle:
             if !sleepLockedByUser,
                Date.now.timeIntervalSince(lastStateChange) > Self.idleSecondsBeforeSleep {

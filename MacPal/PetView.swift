@@ -16,6 +16,14 @@ struct PetView: View {
                 sparkleOverlay
                     .allowsHitTesting(false)
             }
+            if let dmg = controller.lastDamageTaken, Date.now.timeIntervalSince(dmg.at) < 0.8 {
+                Text("-\(dmg.amount)")
+                    .font(.system(size: 14, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.red)
+                    .shadow(color: .black, radius: 1)
+                    .offset(y: -40)
+                    .allowsHitTesting(false)
+            }
         }
         .frame(width: PetController.petSize.width,
                height: PetController.petSize.height)
@@ -89,10 +97,15 @@ struct PetView: View {
         case .idle:
             let bob = sin(bobPhase * 0.5) * 1.0
             return (character.idle, false, CGFloat(bob), 0)
-        case .walking(let direction), .walkingHome(let direction):
+        case .walking(let direction),
+             .walkingHome(let direction),
+             .approachingEnemy(let direction):
             let sprite = walkToggle ? character.walkA : character.walkB
             let bob = abs(sin(bobPhase)) * 2.0
             return (sprite, direction.flipped, CGFloat(-bob), 0)
+        case .fighting:
+            let lunge = sin(bobPhase * 4) * 6
+            return (character.happy, false, CGFloat(lunge), 0)
         case .sleeping:
             let bob = sin(bobPhase * 0.4) * 0.6
             return (character.sleep, false, CGFloat(bob), 0)

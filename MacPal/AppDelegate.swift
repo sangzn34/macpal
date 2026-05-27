@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     lazy var statusPanel = HouseWindowController(controller: controller)
     private var petWindow: PetWindow?
     private var homeWindow: HomeWindow?
+    private var monsterWindows: [UUID: MonsterWindow] = [:]
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -32,7 +33,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         controller.openStatusPanel = { [weak self] in
             self?.statusPanel.toggle()
         }
+        controller.monsterDidSpawn = { [weak self] monster, origin in
+            self?.spawnMonsterWindow(monster: monster, origin: origin)
+        }
+        controller.monsterDidDespawn = { [weak self] id in
+            self?.despawnMonsterWindow(id: id)
+        }
         controller.start()
+    }
+
+    private func spawnMonsterWindow(monster: Monster, origin: NSPoint) {
+        let window = MonsterWindow(monster: monster, origin: origin)
+        let host = NSHostingView(rootView: MonsterView(monster: monster))
+        host.frame = NSRect(origin: .zero, size: MonsterWindow.size)
+        window.contentView = host
+        window.makeKeyAndOrderFront(nil)
+        monsterWindows[monster.id] = window
+    }
+
+    private func despawnMonsterWindow(id: UUID) {
+        guard let window = monsterWindows.removeValue(forKey: id) else { return }
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            window.orderOut(nil)
+        }
     }
 
     func toggleHomeWindow() {

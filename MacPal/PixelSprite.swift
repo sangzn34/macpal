@@ -87,8 +87,8 @@ struct PixelCharacter: Identifiable, Hashable {
 
     func sprite(for state: PetState, walkToggle: Bool) -> PixelSprite {
         switch state {
-        case .idle: return idle
-        case .walking, .walkingHome: return walkToggle ? walkA : walkB
+        case .idle, .fighting: return walkToggle ? happy : idle
+        case .walking, .walkingHome, .approachingEnemy: return walkToggle ? walkA : walkB
         case .sleeping: return sleep
         case .happy, .dragged: return happy
         }
