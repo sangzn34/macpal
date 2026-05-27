@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let controller = PetController()
+    lazy var houseWindow = HouseWindowController(controller: controller)
     private var petWindow: PetWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {

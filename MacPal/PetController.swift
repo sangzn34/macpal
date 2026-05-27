@@ -7,6 +7,7 @@ final class PetController {
     static let petSize = NSSize(width: 96, height: 96)
     static let tickInterval: TimeInterval = 1.0 / 30.0
     static let idleSecondsBeforeSleep: TimeInterval = 30
+    static let decayInterval: TimeInterval = 30
 
     private(set) var state: PetState = .idle
     var speed: PetSpeed = .medium
@@ -15,10 +16,13 @@ final class PetController {
     ) {
         didSet { UserDefaults.standard.set(character.id, forKey: "MacPal.character") }
     }
+    var stats: PetStats = PetStats.load()
+    var levelUpFlashTrigger: Int = 0
     var isSleeping: Bool { state == .sleeping }
 
     private weak var window: NSWindow?
     private var timer: Timer?
+    private var decayTimer: Timer?
     private var lastStateChange: Date = .now
     private var nextBehaviorChange: Date = .now
     private var sleepLockedByUser = false
@@ -37,6 +41,61 @@ final class PetController {
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
         scheduleNextBehavior(in: 2...5)
+
+        decayTimer?.invalidate()
+        let decay = Timer(timeInterval: Self.decayInterval, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.stats.decay()
+                self.stats.save()
+            }
+        }
+        RunLoop.main.add(decay, forMode: .common)
+        self.decayTimer = decay
+    }
+
+    func feed() -> FeedResult {
+        let result = stats.feed()
+        stats.save()
+        switch result {
+        case .ate:
+            triggerHappy(duration: 0.8)
+        case .leveledUp:
+            triggerLevelUp()
+        case .full:
+            break
+        }
+        return result
+    }
+
+    func play() -> PlayResult {
+        let result = stats.play()
+        stats.save()
+        switch result {
+        case .played:
+            triggerHappy(duration: 0.6)
+        case .leveledUp:
+            triggerLevelUp()
+        }
+        return result
+    }
+
+    private func triggerHappy(duration: TimeInterval) {
+        guard !sleepLockedByUser else { return }
+        transition(to: .happy)
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
+            guard let self else { return }
+            if self.state == .happy {
+                self.transition(to: .idle)
+                self.scheduleNextBehavior(in: 1...3)
+            }
+        }
+    }
+
+    private func triggerLevelUp() {
+        levelUpFlashTrigger &+= 1
+        triggerHappy(duration: 1.5)
     }
 
     static func initialOrigin(for size: NSSize) -> NSPoint {
@@ -68,15 +127,7 @@ final class PetController {
             transition(to: .sleeping)
             return
         }
-        transition(to: .happy)
-        Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 600_000_000)
-            guard let self else { return }
-            if self.state == .happy {
-                self.transition(to: .idle)
-                self.scheduleNextBehavior(in: 1...3)
-            }
-        }
+        _ = play()
     }
 
     func beginDrag() {

@@ -15,6 +15,9 @@
 		9554EC4F1DDA79854FFB4232 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DB80F83B8BB1A794E0BB16 /* AppDelegate.swift */; };
 		BA2C87DB48AC694BAC21EBA9 /* PetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FDBB2081877B9ED699B4DE /* PetController.swift */; };
 		BC4D93A3A98C8F4F357E58A3 /* PetCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94F04BE39E5E219CACFEB09 /* PetCharacters.swift */; };
+		BE73FC41C453E5CC6AD2BDFA /* HouseWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C94FB6CA34C7FBA74A75F1 /* HouseWindow.swift */; };
+		F9C1F3EB998F7ADE77F0D5D7 /* PetStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B2DB3F7A593C41253E33D75 /* PetStats.swift */; };
+		F9E66D22BDA8F3F4C8022C4A /* HouseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C06D58FA7906BBB6CEEC75A /* HouseView.swift */; };
 		FD11B6BBC23C11DE80933E31 /* PetWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A25F9C425C0AFC7810AFAB8 /* PetWindow.swift */; };
 /* End PBXBuildFile section */
 
@@ -22,10 +25,13 @@
 		2EA6A15DA350B19719E2EFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3EF1498E7AC4A37B95C97B5C /* PetCharactersExtra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetCharactersExtra.swift; sourceTree = "<group>"; };
 		41FDBB2081877B9ED699B4DE /* PetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetController.swift; sourceTree = "<group>"; };
+		4C06D58FA7906BBB6CEEC75A /* HouseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseView.swift; sourceTree = "<group>"; };
+		5B2DB3F7A593C41253E33D75 /* PetStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetStats.swift; sourceTree = "<group>"; };
 		6AB81570DB99A2E0103AE7E8 /* PixelSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelSprite.swift; sourceTree = "<group>"; };
 		8C8EAD1071562DBFD09D522E /* PetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetView.swift; sourceTree = "<group>"; };
 		9A25F9C425C0AFC7810AFAB8 /* PetWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetWindow.swift; sourceTree = "<group>"; };
 		9AFD3A7912D05C3C5679E580 /* PetState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetState.swift; sourceTree = "<group>"; };
+		B2C94FB6CA34C7FBA74A75F1 /* HouseWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseWindow.swift; sourceTree = "<group>"; };
 		D00169503AEF312D8809DBE5 /* MacPalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPalApp.swift; sourceTree = "<group>"; };
 		D2038FA4F9D63E54D9086AA2 /* MacPal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacPal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3DB80F83B8BB1A794E0BB16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -45,12 +51,15 @@
 			isa = PBXGroup;
 			children = (
 				D3DB80F83B8BB1A794E0BB16 /* AppDelegate.swift */,
+				4C06D58FA7906BBB6CEEC75A /* HouseView.swift */,
+				B2C94FB6CA34C7FBA74A75F1 /* HouseWindow.swift */,
 				2EA6A15DA350B19719E2EFBF /* Info.plist */,
 				D00169503AEF312D8809DBE5 /* MacPalApp.swift */,
 				E94F04BE39E5E219CACFEB09 /* PetCharacters.swift */,
 				3EF1498E7AC4A37B95C97B5C /* PetCharactersExtra.swift */,
 				41FDBB2081877B9ED699B4DE /* PetController.swift */,
 				9AFD3A7912D05C3C5679E580 /* PetState.swift */,
+				5B2DB3F7A593C41253E33D75 /* PetStats.swift */,
 				8C8EAD1071562DBFD09D522E /* PetView.swift */,
 				9A25F9C425C0AFC7810AFAB8 /* PetWindow.swift */,
 				6AB81570DB99A2E0103AE7E8 /* PixelSprite.swift */,
@@ -126,11 +135,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				9554EC4F1DDA79854FFB4232 /* AppDelegate.swift in Sources */,
+				F9E66D22BDA8F3F4C8022C4A /* HouseView.swift in Sources */,
+				BE73FC41C453E5CC6AD2BDFA /* HouseWindow.swift in Sources */,
 				812E8BEF139DF97D276C6AC3 /* MacPalApp.swift in Sources */,
 				BC4D93A3A98C8F4F357E58A3 /* PetCharacters.swift in Sources */,
 				63AD973A8FA217723DA5514A /* PetCharactersExtra.swift in Sources */,
 				BA2C87DB48AC694BAC21EBA9 /* PetController.swift in Sources */,
 				85C76F401385E94894E0D144 /* PetState.swift in Sources */,
+				F9C1F3EB998F7ADE77F0D5D7 /* PetStats.swift in Sources */,
 				405556EBC430D21A94C2E7B1 /* PetView.swift in Sources */,
 				FD11B6BBC23C11DE80933E31 /* PetWindow.swift in Sources */,
 				577E7FFD4B6F0D7FC7CFE12A /* PixelSprite.swift in Sources */,

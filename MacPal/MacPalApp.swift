@@ -6,7 +6,10 @@ struct MacPalApp: App {
 
     var body: some Scene {
         MenuBarExtra("MacPal", systemImage: "pawprint.circle.fill") {
-            MenuBarContent(controller: appDelegate.controller)
+            MenuBarContent(
+                controller: appDelegate.controller,
+                houseWindow: appDelegate.houseWindow
+            )
         }
         .menuBarExtraStyle(.menu)
     }
@@ -14,8 +17,26 @@ struct MacPalApp: App {
 
 struct MenuBarContent: View {
     @Bindable var controller: PetController
+    let houseWindow: HouseWindowController
 
     var body: some View {
+        Text("\(controller.character.name) — Lvl \(controller.stats.level)")
+        Text("XP \(controller.stats.xp) / \(controller.stats.xpToNextLevel)")
+        Text("🍗 \(controller.stats.hunger)   ❤️ \(controller.stats.happiness)")
+        Divider()
+        Button("Open House…") {
+            houseWindow.toggle()
+        }
+        .keyboardShortcut("h")
+        Button("Feed") {
+            _ = controller.feed()
+        }
+        .keyboardShortcut("f")
+        Button("Play") {
+            _ = controller.play()
+        }
+        .keyboardShortcut("p")
+        Divider()
         Button(controller.isSleeping ? "Wake up" : "Sleep") {
             controller.toggleSleep()
         }

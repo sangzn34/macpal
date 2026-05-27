@@ -4,15 +4,55 @@ struct PetView: View {
     @Bindable var controller: PetController
     @State private var bobPhase: Double = 0
     @State private var walkToggle = false
+    @State private var sparklePhase: Double = 0
+    @State private var sparkleActive = false
 
     private let pixel: CGFloat = PetController.petSize.width / CGFloat(PixelSprite.size)
 
     var body: some View {
-        spriteCanvas
-            .frame(width: PetController.petSize.width,
-                   height: PetController.petSize.height)
-            .contentShape(Rectangle())
-            .onAppear { startTicker() }
+        ZStack {
+            spriteCanvas
+            if sparkleActive {
+                sparkleOverlay
+                    .allowsHitTesting(false)
+            }
+        }
+        .frame(width: PetController.petSize.width,
+               height: PetController.petSize.height)
+        .contentShape(Rectangle())
+        .onAppear { startTicker() }
+        .onChange(of: controller.levelUpFlashTrigger) { _, _ in
+            playLevelUpSparkle()
+        }
+    }
+
+    private var sparkleOverlay: some View {
+        Canvas { ctx, size in
+            let stars: [(CGFloat, CGFloat)] = [
+                (0.2, 0.15), (0.8, 0.2), (0.5, 0.05),
+                (0.15, 0.55), (0.85, 0.5), (0.1, 0.85),
+                (0.9, 0.85), (0.5, 0.95)
+            ]
+            for (i, (fx, fy)) in stars.enumerated() {
+                let phase = sparklePhase + Double(i) * 0.4
+                let s = abs(sin(phase)) * 6 + 2
+                let cx = size.width * fx
+                let cy = size.height * fy
+                let rect = CGRect(x: cx - s/2, y: cy - s/2, width: s, height: s)
+                ctx.fill(
+                    Path(ellipseIn: rect),
+                    with: .color(Color.yellow.opacity(0.85))
+                )
+            }
+        }
+    }
+
+    private func playLevelUpSparkle() {
+        sparkleActive = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            sparkleActive = false
+        }
     }
 
     private var spriteCanvas: some View {
@@ -69,6 +109,7 @@ struct PetView: View {
         Timer.scheduledTimer(withTimeInterval: 1.0 / 12.0, repeats: true) { _ in
             MainActor.assumeIsolated {
                 bobPhase += 0.4
+                sparklePhase += 0.5
             }
         }
         Timer.scheduledTimer(withTimeInterval: 0.22, repeats: true) { _ in
