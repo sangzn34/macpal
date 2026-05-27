@@ -39,7 +39,7 @@ enum PetHouse {
 
     /// Approximate door center in window-local coords (used as walk-home target).
     static var doorCenterOffset: NSPoint {
-        let pixel = displaySize / CGFloat(PixelSprite.size)
+        let pixel = displaySize / CGFloat(sprite.size)
         // Door column ~12-14, bottom row ~20 (origin at bottom-left in AppKit)
         let centerX = (CGFloat(13) + 0.5) * pixel
         // Vertical: door bottom row index 20 -> from top. Convert: y from bottom = (size - 20*pixel)

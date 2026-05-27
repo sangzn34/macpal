@@ -4,7 +4,7 @@ import Observation
 @MainActor
 @Observable
 final class PetController {
-    static let petSize = NSSize(width: 96, height: 96)
+    static let petSize = NSSize(width: 128, height: 128)
     static let tickInterval: TimeInterval = 1.0 / 30.0
     static let idleSecondsBeforeSleep: TimeInterval = 30
     static let decayInterval: TimeInterval = 30

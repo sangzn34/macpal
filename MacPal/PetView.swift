@@ -7,7 +7,9 @@ struct PetView: View {
     @State private var sparklePhase: Double = 0
     @State private var sparkleActive = false
 
-    private let pixel: CGFloat = PetController.petSize.width / CGFloat(PixelSprite.size)
+    private var pixel: CGFloat {
+        PetController.petSize.width / CGFloat(controller.character.idle.size)
+    }
 
     var body: some View {
         ZStack {
@@ -65,20 +67,20 @@ struct PetView: View {
 
     private var spriteCanvas: some View {
         let (sprite, flipX, yOffset, rotation) = renderSpec(for: controller.state)
-        return Canvas { ctx, size in
-            for y in 0..<PixelSprite.size {
-                for x in 0..<PixelSprite.size {
+        let pixelSize = PetController.petSize.width / CGFloat(sprite.size)
+        return Canvas { ctx, _ in
+            for y in 0..<sprite.size {
+                for x in 0..<sprite.size {
                     let color = sprite.color(x: x, y: y)
                     let rect = CGRect(
-                        x: CGFloat(x) * pixel,
-                        y: CGFloat(y) * pixel,
-                        width: pixel,
-                        height: pixel
+                        x: CGFloat(x) * pixelSize,
+                        y: CGFloat(y) * pixelSize,
+                        width: pixelSize,
+                        height: pixelSize
                     )
                     ctx.fill(Path(rect), with: .color(color))
                 }
             }
-            _ = size
         }
         .scaleEffect(x: flipX ? -1 : 1, y: 1)
         .offset(y: yOffset)

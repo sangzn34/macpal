@@ -262,10 +262,10 @@ struct PixelSpriteView: View {
     let size: CGFloat
 
     var body: some View {
-        let pixel = size / CGFloat(PixelSprite.size)
+        let pixel = size / CGFloat(sprite.size)
         Canvas { ctx, _ in
-            for y in 0..<PixelSprite.size {
-                for x in 0..<PixelSprite.size {
+            for y in 0..<sprite.size {
+                for x in 0..<sprite.size {
                     let color = sprite.color(x: x, y: y)
                     let rect = CGRect(
                         x: CGFloat(x) * pixel,
