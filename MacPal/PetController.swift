@@ -334,18 +334,28 @@ final class PetController {
             transition(to: .sleeping)
             return
         }
+        if monster != nil {
+            startApproach()
+            return
+        }
         _ = play()
     }
 
     func beginDrag() {
+        stopCombatLoop()
+        activeSkillCast = nil
         transition(to: .dragged)
     }
 
     func didDrag(to _: NSPoint) {}
 
     func endDrag() {
-        transition(to: .idle)
-        scheduleNextBehavior(in: 1...3)
+        if monster != nil {
+            startApproach()
+        } else {
+            transition(to: .idle)
+            scheduleNextBehavior(in: 1...3)
+        }
     }
 
     private func tick() {
