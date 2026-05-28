@@ -9,6 +9,15 @@ enum PetState: Equatable {
     case sleeping
     case happy
     case dragged
+
+    var isWalkingLike: Bool {
+        switch self {
+        case .walking, .walkingHome, .approachingEnemy:
+            return true
+        case .idle, .fighting, .sleeping, .happy, .dragged:
+            return false
+        }
+    }
 }
 
 enum WalkDirection {

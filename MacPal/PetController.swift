@@ -4,7 +4,9 @@ import Observation
 @MainActor
 @Observable
 final class PetController {
-    static let tickInterval: TimeInterval = 1.0 / 30.0
+    static let baselineTickInterval: TimeInterval = 1.0 / 30.0
+    static let activeTickInterval: TimeInterval = 1.0 / 20.0
+    static let relaxedTickInterval: TimeInterval = 0.25
     static let idleSecondsBeforeSleep: TimeInterval = 30
     static let decayInterval: TimeInterval = 30
     static let monsterSpawnIntervalRange: ClosedRange<Double> = 60...120
@@ -46,6 +48,10 @@ final class PetController {
 
     private weak var window: NSWindow?
     private var timer: Timer?
+    private var currentTickInterval: TimeInterval?
+    private var movementScale: CGFloat {
+        CGFloat((currentTickInterval ?? Self.baselineTickInterval) / Self.baselineTickInterval)
+    }
     private var decayTimer: Timer?
     private var monsterSpawnTimer: Timer?
     private var combatTimer: Timer?
@@ -82,14 +88,7 @@ final class PetController {
     }
 
     func start() {
-        timer?.invalidate()
-        let timer = Timer(timeInterval: Self.tickInterval, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated {
-                self?.tick()
-            }
-        }
-        RunLoop.main.add(timer, forMode: .common)
-        self.timer = timer
+        scheduleTickTimer(interval: tickInterval(for: state))
         scheduleNextBehavior(in: 2...5)
 
         decayTimer?.invalidate()
@@ -100,10 +99,34 @@ final class PetController {
                 self.stats.save()
             }
         }
+        decay.tolerance = Self.decayInterval * 0.2
         RunLoop.main.add(decay, forMode: .common)
         self.decayTimer = decay
 
         scheduleNextMonsterSpawn()
+    }
+
+    private func scheduleTickTimer(interval: TimeInterval) {
+        guard currentTickInterval != interval else { return }
+        timer?.invalidate()
+        let timer = Timer(timeInterval: interval, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.tick()
+            }
+        }
+        timer.tolerance = interval * 0.2
+        RunLoop.main.add(timer, forMode: .common)
+        self.timer = timer
+        currentTickInterval = interval
+    }
+
+    private func tickInterval(for state: PetState) -> TimeInterval {
+        switch state {
+        case .walking, .walkingHome, .approachingEnemy:
+            return Self.activeTickInterval
+        case .idle, .fighting, .sleeping, .happy, .dragged:
+            return Self.relaxedTickInterval
+        }
     }
 
     // MARK: - Monsters
@@ -118,6 +141,7 @@ final class PetController {
                 self?.spawnMonsterIfPossible()
             }
         }
+        t.tolerance = min(delay * 0.1, 10)
         RunLoop.main.add(t, forMode: .common)
         monsterSpawnTimer = t
     }
@@ -178,7 +202,7 @@ final class PetController {
             transition(to: .approachingEnemy(direction: newDir))
         }
         var origin = window.frame.origin
-        origin.x += newDir.sign * speed.pixelsPerTick * 1.5
+        origin.x += newDir.sign * speed.pixelsPerTick * 1.5 * movementScale
         window.setFrameOrigin(origin)
     }
 
@@ -189,6 +213,7 @@ final class PetController {
                 self?.combatTick()
             }
         }
+        t.tolerance = 0.1
         RunLoop.main.add(t, forMode: .common)
         combatTimer = t
     }
@@ -412,7 +437,7 @@ final class PetController {
         let petCenterX = window.frame.origin.x + petSize.width / 2
         let distance = abs(targetX - petCenterX)
 
-        if distance < speed.pixelsPerTick + 1 {
+        if distance < speed.pixelsPerTick * movementScale + 1 {
             // arrived — sit/sleep at home, restore happiness slowly via decay-pass
             transition(to: .sleeping)
             stats.happiness = min(100, stats.happiness + 15)
@@ -426,7 +451,7 @@ final class PetController {
             transition(to: .walkingHome(direction: newDirection))
         }
         var origin = window.frame.origin
-        origin.x += newDirection.sign * speed.pixelsPerTick
+        origin.x += newDirection.sign * speed.pixelsPerTick * movementScale
         window.setFrameOrigin(origin)
     }
 
@@ -434,7 +459,7 @@ final class PetController {
         guard let window, let screen = window.screen ?? NSScreen.main else { return }
         let visible = screen.visibleFrame
         var origin = window.frame.origin
-        origin.x += direction.sign * speed.pixelsPerTick
+        origin.x += direction.sign * speed.pixelsPerTick * movementScale
 
         if origin.x <= visible.minX {
             origin.x = visible.minX
@@ -484,5 +509,6 @@ final class PetController {
         guard state != newState else { return }
         state = newState
         lastStateChange = .now
+        scheduleTickTimer(interval: tickInterval(for: newState))
     }
 }

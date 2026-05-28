@@ -6,6 +6,8 @@ struct PetView: View {
     @State private var walkToggle = false
     @State private var sparklePhase: Double = 0
     @State private var sparkleActive = false
+    @State private var animationTimer: Timer?
+    @State private var walkTimer: Timer?
 
     private var pixel: CGFloat {
         controller.petSize.width / CGFloat(controller.character.idle.size)
@@ -44,6 +46,10 @@ struct PetView: View {
                height: controller.petSize.height)
         .contentShape(Rectangle())
         .onAppear { startTicker() }
+        .onDisappear { stopTicker() }
+        .onChange(of: controller.state) { _, _ in
+            startTicker()
+        }
         .onChange(of: controller.levelUpFlashTrigger) { _, _ in
             playLevelUpSparkle()
         }
@@ -158,16 +164,44 @@ struct PetView: View {
     }
 
     private func startTicker() {
-        Timer.scheduledTimer(withTimeInterval: 1.0 / 12.0, repeats: true) { _ in
+        stopTicker()
+
+        let timer = Timer(timeInterval: animationInterval, repeats: true) { _ in
             MainActor.assumeIsolated {
                 bobPhase += 0.4
                 sparklePhase += 0.5
             }
         }
-        Timer.scheduledTimer(withTimeInterval: 0.22, repeats: true) { _ in
+        timer.tolerance = animationInterval * 0.2
+        RunLoop.main.add(timer, forMode: .common)
+        animationTimer = timer
+
+        guard controller.state.isWalkingLike else { return }
+        let walk = Timer(timeInterval: 0.22, repeats: true) { _ in
             MainActor.assumeIsolated {
                 walkToggle.toggle()
             }
+        }
+        walk.tolerance = 0.04
+        RunLoop.main.add(walk, forMode: .common)
+        walkTimer = walk
+    }
+
+    private func stopTicker() {
+        animationTimer?.invalidate()
+        animationTimer = nil
+        walkTimer?.invalidate()
+        walkTimer = nil
+    }
+
+    private var animationInterval: TimeInterval {
+        switch controller.state {
+        case .walking, .walkingHome, .approachingEnemy, .fighting, .happy, .dragged:
+            return 1.0 / 12.0
+        case .idle:
+            return 0.25
+        case .sleeping:
+            return 0.5
         }
     }
 }
