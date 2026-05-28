@@ -15,6 +15,7 @@
 		849D415DEF6AEDAE246EEC4C /* PetHouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D1D301CE6A159FD8726B140 /* PetHouse.swift */; };
 		8591818B787E0E9AC4534D15 /* Monster.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC51A73A2BFFC5057E576C38 /* Monster.swift */; };
 		85C76F401385E94894E0D144 /* PetState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFD3A7912D05C3C5679E580 /* PetState.swift */; };
+		8625BB3377FE5144C595CC0C /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 27F0A53450F9FEF6ADB31C5D /* AppIcon.icns */; };
 		9554EC4F1DDA79854FFB4232 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DB80F83B8BB1A794E0BB16 /* AppDelegate.swift */; };
 		BA2C87DB48AC694BAC21EBA9 /* PetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FDBB2081877B9ED699B4DE /* PetController.swift */; };
 		BC4D93A3A98C8F4F357E58A3 /* PetCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94F04BE39E5E219CACFEB09 /* PetCharacters.swift */; };
@@ -28,6 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		27F0A53450F9FEF6ADB31C5D /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		2802954392128AA8119D9E1F /* HomeWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeWindow.swift; sourceTree = "<group>"; };
 		2EA6A15DA350B19719E2EFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3EF1498E7AC4A37B95C97B5C /* PetCharactersExtra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetCharactersExtra.swift; sourceTree = "<group>"; };
@@ -81,8 +83,17 @@
 				8C8EAD1071562DBFD09D522E /* PetView.swift */,
 				9A25F9C425C0AFC7810AFAB8 /* PetWindow.swift */,
 				6AB81570DB99A2E0103AE7E8 /* PixelSprite.swift */,
+				B5482F16FE92C6BB3BB7CF91 /* Resources */,
 			);
 			path = MacPal;
+			sourceTree = "<group>";
+		};
+		B5482F16FE92C6BB3BB7CF91 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				27F0A53450F9FEF6ADB31C5D /* AppIcon.icns */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		FD1F70922628BF5125A53EC3 = {
@@ -101,6 +112,7 @@
 			buildConfigurationList = 259EB9AB9A127FF68D6C9936 /* Build configuration list for PBXNativeTarget "MacPal" */;
 			buildPhases = (
 				AF91444EC302481E47D936D0 /* Sources */,
+				FE7B1CC23346490263A53E53 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -146,6 +158,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FE7B1CC23346490263A53E53 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8625BB3377FE5144C595CC0C /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AF91444EC302481E47D936D0 /* Sources */ = {
