@@ -23,8 +23,10 @@ final class PetController {
     var levelUpFlashTrigger: Int = 0
     var lastDamageDealt: (amount: Int, at: Date)?
     var lastDamageTaken: (amount: Int, at: Date)?
+    var activeSkillCast: ActiveSkillCast?
     private(set) var monster: Monster?
     private(set) var monsterOriginX: CGFloat?
+    private var skillCooldowns: [String: Date] = [:]
     var isSleeping: Bool { state == .sleeping }
     var isInCombat: Bool {
         if case .fighting = state { return true }
@@ -188,11 +190,22 @@ final class PetController {
             stopCombatLoop()
             return
         }
-        // Pet attacks
-        let dmg = max(1, petAttack + Int.random(in: -1...2))
+
+        let skill = selectSkill()
+        let baseDmg = Int.random(in: skill.damage)
+        let dmg = max(1, baseDmg + stats.level)
         monster.hp = max(0, monster.hp - dmg)
         monster.hurtFlash &+= 1
         lastDamageDealt = (dmg, .now)
+        skillCooldowns[skill.id] = .now.addingTimeInterval(skill.cooldown)
+        activeSkillCast = ActiveSkillCast(skill: skill, startedAt: .now)
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(skill.castDuration * 1_000_000_000))
+            guard let self else { return }
+            if self.activeSkillCast?.skill.id == skill.id {
+                self.activeSkillCast = nil
+            }
+        }
 
         if monster.isDead {
             endCombat(victory: true)
@@ -205,6 +218,21 @@ final class PetController {
         stats.happiness = max(0, stats.happiness - bite)
         stats.hunger = max(0, stats.hunger - max(1, bite / 2))
         stats.save()
+    }
+
+    /// Pick best ready skill. Prefer highest-damage skill that's off cooldown.
+    private func selectSkill() -> PetSkill {
+        let unlocked = PetSkills.unlocked(at: stats.level)
+        let ready = unlocked.filter { skill in
+            guard let until = skillCooldowns[skill.id] else { return true }
+            return Date.now >= until
+        }
+        // Prefer highest expected damage among ready skills
+        let best = ready.max(by: { lhs, rhs in
+            (lhs.damage.upperBound + lhs.damage.lowerBound) <
+            (rhs.damage.upperBound + rhs.damage.lowerBound)
+        })
+        return best ?? PetSkills.bite
     }
 
     private func endCombat(victory: Bool) {

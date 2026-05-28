@@ -10,6 +10,7 @@
 		405556EBC430D21A94C2E7B1 /* PetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C8EAD1071562DBFD09D522E /* PetView.swift */; };
 		577E7FFD4B6F0D7FC7CFE12A /* PixelSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AB81570DB99A2E0103AE7E8 /* PixelSprite.swift */; };
 		63AD973A8FA217723DA5514A /* PetCharactersExtra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EF1498E7AC4A37B95C97B5C /* PetCharactersExtra.swift */; };
+		6CE3284729EB825189061744 /* PetSkills.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80190009CF188F615590382 /* PetSkills.swift */; };
 		812E8BEF139DF97D276C6AC3 /* MacPalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D00169503AEF312D8809DBE5 /* MacPalApp.swift */; };
 		849D415DEF6AEDAE246EEC4C /* PetHouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D1D301CE6A159FD8726B140 /* PetHouse.swift */; };
 		8591818B787E0E9AC4534D15 /* Monster.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC51A73A2BFFC5057E576C38 /* Monster.swift */; };
@@ -45,6 +46,7 @@
 		D00169503AEF312D8809DBE5 /* MacPalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPalApp.swift; sourceTree = "<group>"; };
 		D2038FA4F9D63E54D9086AA2 /* MacPal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacPal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3DB80F83B8BB1A794E0BB16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D80190009CF188F615590382 /* PetSkills.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetSkills.swift; sourceTree = "<group>"; };
 		E94F04BE39E5E219CACFEB09 /* PetCharacters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetCharacters.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -73,6 +75,7 @@
 				3EF1498E7AC4A37B95C97B5C /* PetCharactersExtra.swift */,
 				41FDBB2081877B9ED699B4DE /* PetController.swift */,
 				6D1D301CE6A159FD8726B140 /* PetHouse.swift */,
+				D80190009CF188F615590382 /* PetSkills.swift */,
 				9AFD3A7912D05C3C5679E580 /* PetState.swift */,
 				5B2DB3F7A593C41253E33D75 /* PetStats.swift */,
 				8C8EAD1071562DBFD09D522E /* PetView.swift */,
@@ -161,6 +164,7 @@
 				63AD973A8FA217723DA5514A /* PetCharactersExtra.swift in Sources */,
 				BA2C87DB48AC694BAC21EBA9 /* PetController.swift in Sources */,
 				849D415DEF6AEDAE246EEC4C /* PetHouse.swift in Sources */,
+				6CE3284729EB825189061744 /* PetSkills.swift in Sources */,
 				85C76F401385E94894E0D144 /* PetState.swift in Sources */,
 				F9C1F3EB998F7ADE77F0D5D7 /* PetStats.swift in Sources */,
 				405556EBC430D21A94C2E7B1 /* PetView.swift in Sources */,

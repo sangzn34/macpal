@@ -14,8 +14,20 @@ struct PetView: View {
     var body: some View {
         ZStack {
             spriteCanvas
+                .offset(x: skillSpriteOffset.x, y: skillSpriteOffset.y)
             if sparkleActive {
                 sparkleOverlay
+                    .allowsHitTesting(false)
+            }
+            if let cast = controller.activeSkillCast {
+                SkillEffectView(cast: cast)
+                    .allowsHitTesting(false)
+                Text(cast.skill.name)
+                    .font(.system(size: 12, weight: .heavy, design: .rounded))
+                    .foregroundStyle(cast.skill.color)
+                    .shadow(color: .black, radius: 1)
+                    .offset(y: -55)
+                    .opacity(1.0 - cast.progress * 0.6)
                     .allowsHitTesting(false)
             }
             if let dmg = controller.lastDamageTaken, Date.now.timeIntervalSince(dmg.at) < 0.8 {
@@ -62,6 +74,26 @@ struct PetView: View {
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 1_500_000_000)
             sparkleActive = false
+        }
+    }
+
+    private var skillSpriteOffset: CGPoint {
+        guard let cast = controller.activeSkillCast else { return .zero }
+        let p = cast.progress
+        switch cast.skill.effect {
+        case .pounce:
+            // dash forward then back
+            let curve = sin(p * .pi) * 16
+            return CGPoint(x: curve, y: 0)
+        case .bite:
+            let curve = sin(p * .pi) * 6
+            return CGPoint(x: curve, y: 0)
+        case .slash:
+            return CGPoint(x: sin(p * .pi) * 4, y: 0)
+        case .spin:
+            return .zero
+        case .fireball:
+            return CGPoint(x: -sin(p * .pi) * 3, y: -sin(p * .pi) * 2)
         }
     }
 
@@ -132,5 +164,72 @@ struct PetView: View {
                 walkToggle.toggle()
             }
         }
+    }
+}
+
+struct SkillEffectView: View {
+    let cast: ActiveSkillCast
+
+    var body: some View {
+        Canvas { ctx, size in
+            let p = cast.progress
+            let center = CGPoint(x: size.width / 2, y: size.height / 2)
+            switch cast.skill.effect {
+            case .bite:
+                let r = 6 + p * 18
+                ctx.fill(
+                    Path(ellipseIn: CGRect(x: center.x - r/2, y: center.y - r/2, width: r, height: r)),
+                    with: .color(cast.skill.color.opacity(1.0 - p))
+                )
+            case .slash:
+                // Diagonal white slash from top-left to bottom-right
+                var path = Path()
+                let startX = size.width * 0.15 + p * 6
+                let startY = size.height * 0.2
+                let endX = size.width * 0.85
+                let endY = size.height * 0.75 + p * 6
+                path.move(to: CGPoint(x: startX, y: startY))
+                path.addLine(to: CGPoint(x: endX, y: endY))
+                ctx.stroke(path, with: .color(.white.opacity(1.0 - p)), lineWidth: 4)
+                ctx.stroke(path, with: .color(cast.skill.color.opacity(1.0 - p)), lineWidth: 1.5)
+            case .pounce:
+                // motion lines behind the pet
+                for i in 0..<4 {
+                    var path = Path()
+                    let y = size.height * (0.25 + Double(i) * 0.15)
+                    path.move(to: CGPoint(x: size.width * 0.1 - p * 20, y: y))
+                    path.addLine(to: CGPoint(x: size.width * 0.45 - p * 20, y: y))
+                    ctx.stroke(path, with: .color(cast.skill.color.opacity(0.6 * (1.0 - p))), lineWidth: 2)
+                }
+            case .fireball:
+                // Travel orange ball from pet center to the right edge
+                let x = center.x + p * (size.width * 0.55)
+                let y = center.y - p * 4
+                let r: CGFloat = 14
+                ctx.fill(
+                    Path(ellipseIn: CGRect(x: x - r/2, y: y - r/2, width: r, height: r)),
+                    with: .color(cast.skill.color.opacity(1.0 - p * 0.3))
+                )
+                ctx.fill(
+                    Path(ellipseIn: CGRect(x: x - r/4, y: y - r/4, width: r/2, height: r/2)),
+                    with: .color(.yellow.opacity(1.0 - p * 0.3))
+                )
+            case .spin:
+                // Cyan spinning ring
+                let angle = p * .pi * 4
+                for i in 0..<6 {
+                    let a = angle + Double(i) * .pi / 3
+                    let r: CGFloat = 28
+                    let x = center.x + cos(a) * r
+                    let y = center.y + sin(a) * r
+                    let dotR: CGFloat = 5
+                    ctx.fill(
+                        Path(ellipseIn: CGRect(x: x - dotR/2, y: y - dotR/2, width: dotR, height: dotR)),
+                        with: .color(cast.skill.color.opacity(1.0 - p))
+                    )
+                }
+            }
+        }
+        .frame(width: PetController.petSize.width, height: PetController.petSize.height)
     }
 }
