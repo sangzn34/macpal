@@ -2,6 +2,8 @@
 
 Tiny 2D desktop pet for macOS. Floats on top of every Space, walks around the bottom of the screen, naps after 30s idle, bounces when you click, can be dragged with the mouse, and lives in the menu bar.
 
+![MacPal desktop pet screenshot](docs/assets/macpal-screenshot.png)
+
 ## Build
 
 Requires Xcode 16+ and `xcodegen` (`brew install xcodegen`).
