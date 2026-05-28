@@ -4,7 +4,6 @@ import Observation
 @MainActor
 @Observable
 final class PetController {
-    static let petSize = NSSize(width: 128, height: 128)
     static let tickInterval: TimeInterval = 1.0 / 30.0
     static let idleSecondsBeforeSleep: TimeInterval = 30
     static let decayInterval: TimeInterval = 30
@@ -14,6 +13,15 @@ final class PetController {
 
     private(set) var state: PetState = .idle
     var speed: PetSpeed = .medium
+    var displaySize: PetDisplaySize = PetDisplaySize(
+        rawValue: UserDefaults.standard.string(forKey: "MacPal.displaySize") ?? ""
+    ) ?? .medium {
+        didSet {
+            UserDefaults.standard.set(displaySize.rawValue, forKey: "MacPal.displaySize")
+            resizePetWindow(from: oldValue.size)
+        }
+    }
+    var petSize: NSSize { NSSize(width: displaySize.size.width, height: displaySize.size.height) }
     var character: PixelCharacter = PetCharacters.character(
         withId: UserDefaults.standard.string(forKey: "MacPal.character") ?? "cat"
     ) {
@@ -61,7 +69,7 @@ final class PetController {
 
     func goHome() {
         guard let homeOrigin, let window else { return }
-        let petCenterX = window.frame.origin.x + Self.petSize.width / 2
+        let petCenterX = window.frame.origin.x + petSize.width / 2
         let targetX = homeOrigin.x + PetHouse.doorCenterOffset.x
         let direction: WalkDirection = targetX < petCenterX ? .left : .right
         transition(to: .walkingHome(direction: direction))
@@ -142,7 +150,7 @@ final class PetController {
 
     private func startApproach() {
         guard let window, let mx = monsterCenterX() else { return }
-        let petCenterX = window.frame.origin.x + Self.petSize.width / 2
+        let petCenterX = window.frame.origin.x + petSize.width / 2
         let direction: WalkDirection = mx < petCenterX ? .left : .right
         transition(to: .approachingEnemy(direction: direction))
         nextBehaviorChange = Date.distantFuture
@@ -158,7 +166,7 @@ final class PetController {
             endCombat(victory: false)
             return
         }
-        let petCenterX = window.frame.origin.x + Self.petSize.width / 2
+        let petCenterX = window.frame.origin.x + petSize.width / 2
         let distance = abs(mx - petCenterX)
         if distance <= Self.combatRangePx {
             transition(to: .fighting)
@@ -313,7 +321,7 @@ final class PetController {
 
     func resetPosition() {
         guard let window else { return }
-        let origin = Self.initialOrigin(for: Self.petSize)
+        let origin = Self.initialOrigin(for: petSize)
         window.setFrameOrigin(origin)
         transition(to: .idle)
     }
@@ -348,6 +356,19 @@ final class PetController {
     }
 
     func didDrag(to _: NSPoint) {}
+
+    private func resizePetWindow(from previousSize: CGSize) {
+        guard let window else { return }
+        let oldFrame = window.frame
+        let newSize = petSize
+        let centerX = oldFrame.midX
+        let bottomY = oldFrame.minY
+        let newOrigin = NSPoint(
+            x: centerX - newSize.width / 2,
+            y: bottomY + (previousSize.height - newSize.height) / 2
+        )
+        window.setFrame(NSRect(origin: newOrigin, size: newSize), display: true)
+    }
 
     func endDrag() {
         if monster != nil {
@@ -388,7 +409,7 @@ final class PetController {
             scheduleNextBehavior(in: 2...5)
             return
         }
-        let petCenterX = window.frame.origin.x + Self.petSize.width / 2
+        let petCenterX = window.frame.origin.x + petSize.width / 2
         let distance = abs(targetX - petCenterX)
 
         if distance < speed.pixelsPerTick + 1 {
@@ -418,8 +439,8 @@ final class PetController {
         if origin.x <= visible.minX {
             origin.x = visible.minX
             transition(to: .walking(direction: .right))
-        } else if origin.x + Self.petSize.width >= visible.maxX {
-            origin.x = visible.maxX - Self.petSize.width
+        } else if origin.x + petSize.width >= visible.maxX {
+            origin.x = visible.maxX - petSize.width
             transition(to: .walking(direction: .left))
         }
 

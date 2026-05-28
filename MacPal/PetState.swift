@@ -46,3 +46,25 @@ enum PetSpeed: String, CaseIterable, Identifiable {
         }
     }
 }
+
+enum PetDisplaySize: String, CaseIterable, Identifiable {
+    case small, medium, large
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .small: return "Small"
+        case .medium: return "Medium"
+        case .large: return "Large"
+        }
+    }
+
+    var size: CGSize {
+        switch self {
+        case .small: return CGSize(width: 96, height: 96)
+        case .medium: return CGSize(width: 128, height: 128)
+        case .large: return CGSize(width: 176, height: 176)
+        }
+    }
+}

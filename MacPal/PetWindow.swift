@@ -6,7 +6,7 @@ final class PetWindow: NSWindow {
 
     init(controller: PetController) {
         self.controller = controller
-        let size = PetController.petSize
+        let size = controller.petSize
         let origin = PetController.initialOrigin(for: size)
         super.init(
             contentRect: NSRect(origin: origin, size: size),

@@ -23,6 +23,7 @@ open build/Build/Products/Debug/MacPal.app
 | Idle 30s | Pet falls asleep |
 | Menu bar → Wake / Sleep | Force state |
 | Menu bar → Speed | Walking speed |
+| Menu bar → Size | Pet size: Small, Medium, Large |
 | Menu bar → Reset position | Re-center pet |
 | Menu bar → Quit | Exit app |
 

@@ -24,7 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let window = PetWindow(controller: controller)
         let host = NSHostingView(rootView: PetView(controller: controller))
-        host.frame = NSRect(origin: .zero, size: PetController.petSize)
+        host.frame = NSRect(origin: .zero, size: controller.petSize)
         window.contentView = host
         window.makeKeyAndOrderFront(nil)
         petWindow = window

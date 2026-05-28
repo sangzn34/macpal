@@ -8,7 +8,7 @@ struct PetView: View {
     @State private var sparkleActive = false
 
     private var pixel: CGFloat {
-        PetController.petSize.width / CGFloat(controller.character.idle.size)
+        controller.petSize.width / CGFloat(controller.character.idle.size)
     }
 
     var body: some View {
@@ -21,31 +21,36 @@ struct PetView: View {
             }
             if let cast = controller.activeSkillCast {
                 SkillEffectView(cast: cast)
+                    .frame(width: controller.petSize.width, height: controller.petSize.height)
                     .allowsHitTesting(false)
                 Text(cast.skill.name)
-                    .font(.system(size: 12, weight: .heavy, design: .rounded))
+                    .font(.system(size: 12 * sizeScale, weight: .heavy, design: .rounded))
                     .foregroundStyle(cast.skill.color)
                     .shadow(color: .black, radius: 1)
-                    .offset(y: -55)
+                    .offset(y: -55 * sizeScale)
                     .opacity(1.0 - cast.progress * 0.6)
                     .allowsHitTesting(false)
             }
             if let dmg = controller.lastDamageTaken, Date.now.timeIntervalSince(dmg.at) < 0.8 {
                 Text("-\(dmg.amount)")
-                    .font(.system(size: 14, weight: .heavy, design: .rounded))
+                    .font(.system(size: 14 * sizeScale, weight: .heavy, design: .rounded))
                     .foregroundStyle(.red)
                     .shadow(color: .black, radius: 1)
-                    .offset(y: -40)
+                    .offset(y: -40 * sizeScale)
                     .allowsHitTesting(false)
             }
         }
-        .frame(width: PetController.petSize.width,
-               height: PetController.petSize.height)
+        .frame(width: controller.petSize.width,
+               height: controller.petSize.height)
         .contentShape(Rectangle())
         .onAppear { startTicker() }
         .onChange(of: controller.levelUpFlashTrigger) { _, _ in
             playLevelUpSparkle()
         }
+    }
+
+    private var sizeScale: CGFloat {
+        controller.petSize.width / 128
     }
 
     private var sparkleOverlay: some View {
@@ -83,23 +88,23 @@ struct PetView: View {
         switch cast.skill.effect {
         case .pounce:
             // dash forward then back
-            let curve = sin(p * .pi) * 16
+            let curve = sin(p * .pi) * 16 * sizeScale
             return CGPoint(x: curve, y: 0)
         case .bite:
-            let curve = sin(p * .pi) * 6
+            let curve = sin(p * .pi) * 6 * sizeScale
             return CGPoint(x: curve, y: 0)
         case .slash:
-            return CGPoint(x: sin(p * .pi) * 4, y: 0)
+            return CGPoint(x: sin(p * .pi) * 4 * sizeScale, y: 0)
         case .spin:
             return .zero
         case .fireball:
-            return CGPoint(x: -sin(p * .pi) * 3, y: -sin(p * .pi) * 2)
+            return CGPoint(x: -sin(p * .pi) * 3 * sizeScale, y: -sin(p * .pi) * 2 * sizeScale)
         }
     }
 
     private var spriteCanvas: some View {
         let (sprite, flipX, yOffset, rotation) = renderSpec(for: controller.state)
-        let pixelSize = PetController.petSize.width / CGFloat(sprite.size)
+        let pixelSize = controller.petSize.width / CGFloat(sprite.size)
         return Canvas { ctx, _ in
             for y in 0..<sprite.size {
                 for x in 0..<sprite.size {
@@ -138,13 +143,13 @@ struct PetView: View {
             let bob = abs(sin(bobPhase)) * 2.0
             return (sprite, direction.flipped, CGFloat(-bob), 0)
         case .fighting:
-            let lunge = sin(bobPhase * 4) * 6
+            let lunge = sin(bobPhase * 4) * 6 * sizeScale
             return (character.happy, false, CGFloat(lunge), 0)
         case .sleeping:
             let bob = sin(bobPhase * 0.4) * 0.6
             return (character.sleep, false, CGFloat(bob), 0)
         case .happy:
-            let bounce = abs(sin(bobPhase * 3)) * 4.0
+            let bounce = abs(sin(bobPhase * 3)) * 4.0 * sizeScale
             let tilt = sin(bobPhase * 4) * 5
             return (character.happy, false, CGFloat(-bounce), tilt)
         case .dragged:
@@ -230,6 +235,5 @@ struct SkillEffectView: View {
                 }
             }
         }
-        .frame(width: PetController.petSize.width, height: PetController.petSize.height)
     }
 }

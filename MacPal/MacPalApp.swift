@@ -86,6 +86,19 @@ struct MenuBarContent: View {
                 }
             }
         }
+        Menu("Size") {
+            ForEach(PetDisplaySize.allCases) { size in
+                Button {
+                    controller.displaySize = size
+                } label: {
+                    if controller.displaySize == size {
+                        Label(size.label, systemImage: "checkmark")
+                    } else {
+                        Text(size.label)
+                    }
+                }
+            }
+        }
         Button("Reset position") {
             controller.resetPosition()
         }
